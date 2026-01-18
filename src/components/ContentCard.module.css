@@ -1,0 +1,222 @@
+.card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  border-color: rgba(74, 144, 164, 0.2);
+}
+
+.cardHeader {
+  margin-bottom: 1rem;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--sea-color-1), var(--dark-color-1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatarText {
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.userDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.username {
+  font-weight: 600;
+  color: var(--dark-color-1);
+  font-size: 0.95rem;
+}
+
+.postMeta {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.cardTitle {
+  font-size: 1.25rem;
+  color: var(--dark-color-1);
+  margin: 0 0 1rem;
+  line-height: 1.4;
+}
+
+.cardExcerpt {
+  color: #555;
+  line-height: 1.6;
+  margin: 0 0 1rem;
+  font-size: 0.95rem;
+}
+
+.cardStats {
+  display: flex;
+  gap: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  margin-top: 1rem;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.statIcon {
+  font-size: 1rem;
+}
+
+.statValue {
+  font-weight: 500;
+}
+
+.recipeContent {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.recipeImage {
+  flex-shrink: 0;
+}
+
+.imagePlaceholder {
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(135deg, rgba(212, 165, 116, 0.1), rgba(138, 180, 184, 0.1));
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(212, 165, 116, 0.2);
+}
+
+.imageIcon {
+  font-size: 2.5rem;
+  opacity: 0.7;
+}
+
+.recipeDetails {
+  flex: 1;
+}
+
+.recipeTags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+.bookContent {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.bookCover {
+  flex-shrink: 0;
+}
+
+.coverPlaceholder {
+  width: 100px;
+  height: 140px;
+  background: linear-gradient(135deg, rgba(74, 144, 164, 0.1), rgba(26, 60, 77, 0.1));
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(74, 144, 164, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.coverIcon {
+  font-size: 2rem;
+  opacity: 0.7;
+}
+
+.bookDetails {
+  flex: 1;
+}
+
+.bookAuthor {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.authorLabel {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.authorName {
+  color: var(--dark-color-1);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.bookGenres {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+.tag {
+  background: rgba(74, 144, 164, 0.1);
+  color: var(--dark-color-1);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: 1rem;
+  }
+  
+  .recipeContent,
+  .bookContent {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .imagePlaceholder {
+    width: 100%;
+    height: 200px;
+  }
+  
+  .coverPlaceholder {
+    width: 80px;
+    height: 112px;
+  }
+  
+  .cardStats {
+    gap: 1rem;
+  }
+}
