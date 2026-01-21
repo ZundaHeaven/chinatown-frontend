@@ -1,33 +1,52 @@
 import React, { useState, useEffect } from 'react';
 import styles from './FilterPanel.module.css';
 import { ContentType } from '@/types/common';
+import { RecipeDifficulty } from '@/types/recipe';
 
 interface FilterPanelProps {
   contentType: ContentType;
   onFilterChange: (filters: any) => void;
   filters: any;
+  filterData: {
+    articleTypes: { id: string; name: string }[];
+    genres: { id: string; name: string }[];
+    recipeTypes: { id: string; name: string }[];
+    regions: { id: string; name: string }[];
+  };
 }
 
-const FilterPanel: React.FC<FilterPanelProps> = ({ contentType, onFilterChange, filters }) => {
+const FilterPanel: React.FC<FilterPanelProps> = ({ contentType, onFilterChange, filters, filterData }) => {
   const [localFilters, setLocalFilters] = useState<any>(filters);
-  
-  const [articleTypes, setArticleTypes] = useState<string[]>([]);
-  const [genres, setGenres] = useState<string[]>([]);
-  
+
   useEffect(() => {
-    if (contentType === 'articles') {
-      setArticleTypes(['Технологии', 'Культура', 'История', 'Философия']);
-    } else if (contentType === 'books') {
-      setGenres(['Фантастика', 'Философия', 'История', 'Поэзия', 'Драма']);
-    }
-  }, [contentType]);
-  
+    setLocalFilters(filters);
+  }, [filters]);
+
   const handleInputChange = (name: string, value: any) => {
     const newFilters = { ...localFilters, [name]: value };
     setLocalFilters(newFilters);
     onFilterChange(newFilters);
   };
-  
+
+  const handleMultiSelectChange = (name: string, value: string, checked: boolean) => {
+    const currentValues = localFilters[name] || [];
+    const newValues = checked 
+      ? [...currentValues, value]
+      : currentValues.filter((v: string) => v !== value);
+    
+    handleInputChange(name, newValues);
+  };
+
+  const handleRangeChange = (minName: string, maxName: string, minValue: string, maxValue: string) => {
+    const newFilters = {
+      ...localFilters,
+      [minName]: minValue ? parseInt(minValue) : null,
+      [maxName]: maxValue ? parseInt(maxValue) : null,
+    };
+    setLocalFilters(newFilters);
+    onFilterChange(newFilters);
+  };
+
   const renderArticleFilters = () => (
     <div className={styles.filterSection}>
       <h3 className={styles.filterTitle}>Фильтры статей</h3>
@@ -38,8 +57,8 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ contentType, onFilterChange, 
           type="text"
           className={styles.filterInput}
           placeholder="Введите название..."
-          value={localFilters.titleSearch || ''}
-          onChange={(e) => handleInputChange('titleSearch', e.target.value)}
+          value={localFilters.search || ''}
+          onChange={(e) => handleInputChange('search', e.target.value)}
         />
       </div>
       
@@ -47,12 +66,12 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ contentType, onFilterChange, 
         <label className={styles.filterLabel}>Тип статьи</label>
         <select
           className={styles.filterSelect}
-          value={localFilters.articleType || ''}
-          onChange={(e) => handleInputChange('articleType', e.target.value)}
+          value={localFilters.type || ''}
+          onChange={(e) => handleInputChange('type', e.target.value)}
         >
           <option value="">Все типы</option>
-          {articleTypes.map((type) => (
-            <option key={type} value={type}>{type}</option>
+          {filterData.articleTypes.map((type) => (
+            <option key={type.id} value={type.name}>{type.name}</option>
           ))}
         </select>
       </div>
@@ -72,7 +91,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ contentType, onFilterChange, 
       </div>
     </div>
   );
-  
+
   const renderBookFilters = () => (
     <div className={styles.filterSection}>
       <h3 className={styles.filterTitle}>Фильтры книг</h3>
@@ -83,28 +102,22 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ contentType, onFilterChange, 
           type="text"
           className={styles.filterInput}
           placeholder="Введите название..."
-          value={localFilters.titleSearch || ''}
-          onChange={(e) => handleInputChange('titleSearch', e.target.value)}
+          value={localFilters.title || ''}
+          onChange={(e) => handleInputChange('title', e.target.value)}
         />
       </div>
       
       <div className={styles.filterField}>
         <label className={styles.filterLabel}>Жанры</label>
         <div className={styles.checkboxGroup}>
-          {genres.map((genre) => (
-            <label key={genre} className={styles.checkboxLabel}>
+          {filterData.genres.map((genre) => (
+            <label key={genre.id} className={styles.checkboxLabel}>
               <input
                 type="checkbox"
-                checked={(localFilters.genres || []).includes(genre)}
-                onChange={(e) => {
-                  const currentGenres = localFilters.genres || [];
-                  const newGenres = e.target.checked
-                    ? [...currentGenres, genre]
-                    : currentGenres.filter((g: string) => g !== genre);
-                  handleInputChange('genres', newGenres);
-                }}
+                checked={(localFilters.genreIds || []).includes(genre.id)}
+                onChange={(e) => handleMultiSelectChange('genreIds', genre.id, e.target.checked)}
               />
-              <span>{genre}</span>
+              <span>{genre.name}</span>
             </label>
           ))}
         </div>
@@ -117,16 +130,16 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ contentType, onFilterChange, 
             type="number"
             className={styles.filterInput}
             placeholder="От"
-            value={localFilters.yearFrom || ''}
-            onChange={(e) => handleInputChange('yearFrom', e.target.value)}
+            value={localFilters.yearMin || ''}
+            onChange={(e) => handleRangeChange('yearMin', 'yearMax', e.target.value, localFilters.yearMax || '')}
           />
           <span className={styles.rangeSeparator}>—</span>
           <input
             type="number"
             className={styles.filterInput}
             placeholder="До"
-            value={localFilters.yearTo || ''}
-            onChange={(e) => handleInputChange('yearTo', e.target.value)}
+            value={localFilters.yearMax || ''}
+            onChange={(e) => handleRangeChange('yearMin', 'yearMax', localFilters.yearMin || '', e.target.value)}
           />
         </div>
       </div>
@@ -146,7 +159,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ contentType, onFilterChange, 
       </div>
     </div>
   );
-  
+
   const renderRecipeFilters = () => (
     <div className={styles.filterSection}>
       <h3 className={styles.filterTitle}>Фильтры рецептов</h3>
@@ -157,28 +170,28 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ contentType, onFilterChange, 
           type="text"
           className={styles.filterInput}
           placeholder="Введите название..."
-          value={localFilters.titleSearch || ''}
-          onChange={(e) => handleInputChange('titleSearch', e.target.value)}
+          value={localFilters.title || ''}
+          onChange={(e) => handleInputChange('title', e.target.value)}
         />
       </div>
       
       <div className={styles.filterField}>
-        <label className={styles.filterLabel}>Время приготовления</label>
+        <label className={styles.filterLabel}>Время приготовления (мин)</label>
         <div className={styles.rangeInputs}>
           <input
             type="number"
             className={styles.filterInput}
-            placeholder="От (мин)"
-            value={localFilters.timeFrom || ''}
-            onChange={(e) => handleInputChange('timeFrom', e.target.value)}
+            placeholder="От"
+            value={localFilters.cookTimeMin || ''}
+            onChange={(e) => handleRangeChange('cookTimeMin', 'cookTimeMax', e.target.value, localFilters.cookTimeMax || '')}
           />
           <span className={styles.rangeSeparator}>—</span>
           <input
             type="number"
             className={styles.filterInput}
-            placeholder="До (мин)"
-            value={localFilters.timeTo || ''}
-            onChange={(e) => handleInputChange('timeTo', e.target.value)}
+            placeholder="До"
+            value={localFilters.cookTimeMax || ''}
+            onChange={(e) => handleRangeChange('cookTimeMin', 'cookTimeMax', localFilters.cookTimeMin || '', e.target.value)}
           />
         </div>
       </div>
@@ -186,22 +199,18 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ contentType, onFilterChange, 
       <div className={styles.filterField}>
         <label className={styles.filterLabel}>Сложность</label>
         <div className={styles.checkboxGroup}>
-          {[1, 2, 3, 4].map((level) => (
-            <label key={level} className={styles.checkboxLabel}>
-              <input
-                type="checkbox"
-                checked={(localFilters.difficulty || []).includes(level)}
-                onChange={(e) => {
-                  const current = localFilters.difficulty || [];
-                  const newLevels = e.target.checked
-                    ? [...current, level]
-                    : current.filter((l: number) => l !== level);
-                  handleInputChange('difficulty', newLevels);
-                }}
-              />
-              <span>Уровень {level}</span>
-            </label>
-          ))}
+          {Object.entries(RecipeDifficulty)
+            .filter(([key]) => isNaN(Number(key)))
+            .map(([key, value]) => (
+              <label key={key} className={styles.checkboxLabel}>
+                <input
+                  type="checkbox"
+                  checked={localFilters.recipeDifficulty === value}
+                  onChange={(e) => handleInputChange('recipeDifficulty', e.target.checked ? value : null)}
+                />
+                <span>{key}</span>
+              </label>
+            ))}
         </div>
       </div>
       
@@ -213,19 +222,28 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ contentType, onFilterChange, 
           onChange={(e) => handleInputChange('sort', e.target.value)}
         >
           <option value="">По умолчанию</option>
-          <option value="most_time">По времени приготовления</option>
-          <option value="most_liked">Самые популярные</option>
-          <option value="most_commented">Самые обсуждаемые</option>
+          <option value="cooktime_asc">Время приготовления (↑)</option>
+          <option value="cooktime_desc">Время приготовления (↓)</option>
+          <option value="difficulty_asc">Сложность (↑)</option>
+          <option value="difficulty_desc">Сложность (↓)</option>
+          <option value="created_desc">Дата добавления</option>
         </select>
       </div>
     </div>
   );
-  
+
+  const renderFilters = () => {
+    switch (contentType) {
+      case 'articles': return renderArticleFilters();
+      case 'books': return renderBookFilters();
+      case 'recipes': return renderRecipeFilters();
+      default: return null;
+    }
+  };
+
   return (
     <div className={styles.filterPanel}>
-      {contentType === 'articles' && renderArticleFilters()}
-      {contentType === 'books' && renderBookFilters()}
-      {contentType === 'recipes' && renderRecipeFilters()}
+      {renderFilters()}
     </div>
   );
 };

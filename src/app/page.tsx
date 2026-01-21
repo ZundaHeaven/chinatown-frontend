@@ -4,102 +4,125 @@ import React, { useState, useEffect } from 'react';
 import ContentTabs from '@/components/ContentTabs';
 import FilterPanel from '@/components/FilterPanel';
 import ContentList from '@/components/ContentList';
-import { ContentType } from '@/types';
 import styles from './page.module.css';
+import { getArticles } from '@/services/article';
+import { getArticleTypes } from '@/services/article-type';
+import { getBooks } from '@/services/book';
+import { getGenres } from '@/services/genre';
+import { getRecipes } from '@/services/recipe';
+import { getRecipeTypes } from '@/services/recipe-type';
+import { Article, ArticleFilter } from '@/types/article';
+import { Book, BookFilter } from '@/types/book';
+import { ContentType } from '@/types/common';
+import { Recipe, RecipeFilter } from '@/types/recipe';
+import { getRegions } from '@/services/region';
 
 const HomePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ContentType>('articles');
-  const [filters, setFilters] = useState<any>({});
+  const [loading, setLoading] = useState(false);
   
-  // Данные для демонстрации (в реальном приложении будут приходить с API)
-  const [articles, setArticles] = useState<any[]>([]);
-  const [recipes, setRecipes] = useState<any[]>([]);
-  const [books, setBooks] = useState<any[]>([]);
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [books, setBooks] = useState<Book[]>([]);
   
-  // Загрузка данных (заглушки)
+  const [articleFilters, setArticleFilters] = useState<ArticleFilter>({
+    search: null,
+    type: null,
+    authorId: null,
+    sort: null,
+    status: 'Published'
+  });
+  
+  const [bookFilters, setBookFilters] = useState<BookFilter>({
+    title: null,
+    authorName: null,
+    genreIds: [],
+    yearMin: null,
+    yearMax: null,
+    available: true,
+    sort: null
+  });
+  
+  const [recipeFilters, setRecipeFilters] = useState<RecipeFilter>({
+    title: null,
+    recipeDifficulty: null,
+    recipeTypeIds: null,
+    regionIds: null,
+    cookTimeMin: null,
+    cookTimeMax: null,
+    available: true,
+    sort: null
+  });
+  
+  const [articleTypes, setArticleTypes] = useState<{ id: string; name: string }[]>([]);
+  const [genres, setGenres] = useState<{ id: string; name: string }[]>([]);
+  const [recipeTypes, setRecipeTypes] = useState<{ id: string; name: string }[]>([]);
+  const [regions, setRegions] = useState<{ id: string; name: string }[]>([]);
+
   useEffect(() => {
-    // Заглушки данных
-    const mockArticles = [
-      {
-        id: '1',
-        title: 'Искусство китайской каллиграфии',
-        slug: 'iskusstvo-kitayskoy-kalligrafii',
-        excerpt: 'Исследование истории и техник древнего искусства',
-        body: 'Полный текст статьи о каллиграфии...',
-        readingTimeMinutes: 8,
-        status: 'published',
-        articleType: 'Культура',
-        articleTypeId: '1',
-        authorId: '1',
-        authorName: 'Ли Вэй',
-        likesCount: 42,
-        commentsCount: 12,
-        createdOn: new Date('2024-01-15'),
-        modifiedOn: new Date('2024-01-15'),
+    const loadFilterData = async () => {
+      if (activeTab === 'articles') {
+        const types = await getArticleTypes();
+        setArticleTypes(types.map(t => ({ id: t.id, name: t.name })));
+      } else if (activeTab === 'books') {
+        const genreList = await getGenres();
+        setGenres(genreList.map(g => ({ id: g.id, name: g.name })));
+      } else if (activeTab === 'recipes') {
+        const types = await getRecipeTypes();
+        const regionList = await getRegions();
+        setRecipeTypes(types.map(t => ({ id: t.id, name: t.name })));
+        setRegions(regionList.map(r => ({ id: r.id, name: r.name })));
       }
-    ];
+    };
     
-    const mockRecipes = [
-      {
-        id: '1',
-        title: 'Утка по-пекински',
-        slug: 'utka-po-pekinski',
-        excerpt: 'Классическое блюдо китайской кухни',
-        difficulty: 3,
-        ingredients: 'Утка, мед, соевый соус, имбирь, чеснок',
-        instructions: 'Пошаговый рецепт приготовления...',
-        cookTimeMinutes: 120,
-        imageId: '1',
-        authorId: '2',
-        authorName: 'Чжан Ли',
-        likesCount: 89,
-        commentsCount: 24,
-        createdOn: new Date('2024-02-10'),
-        modifiedOn: new Date('2024-02-10'),
-        recipeTypeClaims: [{ id: '1', name: 'Мясные блюда' }],
-        recipeRegions: [{ id: '1', name: 'Пекин' }],
+    loadFilterData();
+  }, [activeTab]);
+
+  const loadContent = async () => {
+    setLoading(true);
+    try {
+      switch (activeTab) {
+        case 'articles':
+          const articlesData = await getArticles(articleFilters);
+          setArticles(articlesData);
+          break;
+        case 'books':
+          const booksData = await getBooks(bookFilters);
+          setBooks(booksData);
+          break;
+        case 'recipes':
+          const recipesData = await getRecipes(recipeFilters);
+          setRecipes(recipesData);
+          break;
       }
-    ];
-    
-    const mockBooks = [
-      {
-        id: '1',
-        title: 'Дао Дэ Цзин',
-        slug: 'dao-de-tszin',
-        excerpt: 'Древний китайский философский трактат',
-        authorName: 'Лао-цзы',
-        description: 'Основополагающий текст даосизма',
-        pageAmount: 128,
-        yearOfPublish: -400,
-        fileSizeBytes: 2048000,
-        createdOn: new Date('2024-01-01'),
-        modifiedOn: new Date('2024-01-01'),
-        genres: [{ id: '1', name: 'Философия' }],
-        coverFileId: '1',
-        bookFileId: '1',
-        status: 2,
-        userId: '3',
-        username: 'Администратор',
-        likesCount: 156,
-        commentsCount: 45,
-      }
-    ];
-    
-    setArticles(mockArticles);
-    setRecipes(mockRecipes);
-    setBooks(mockBooks);
-  }, []);
-  
+    } catch (error) {
+      console.error('Ошибка загрузки:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadContent();
+  }, [activeTab, articleFilters, bookFilters, recipeFilters]);
+
   const handleTabChange = (tab: ContentType) => {
     setActiveTab(tab);
-    setFilters({}); // Сброс фильтров при смене раздела
   };
-  
-  const handleFilterChange = (newFilters: any) => {
-    setFilters(newFilters);
-    // Здесь будет логика фильтрации данных
+
+  const handleArticleFilterChange = (newFilters: ArticleFilter) => {
+    newFilters.status = 'Published';
+    setArticleFilters(newFilters);
   };
-  
+
+  const handleBookFilterChange = (newFilters: BookFilter) => {
+    setBookFilters(newFilters);
+  };
+
+  const handleRecipeFilterChange = (newFilters: RecipeFilter) => {
+    setRecipeFilters(newFilters);
+  };
+
   const getCurrentContent = () => {
     switch (activeTab) {
       case 'articles': return articles;
@@ -108,7 +131,30 @@ const HomePage: React.FC = () => {
       default: return [];
     }
   };
-  
+
+  const getCurrentFilters = () => {
+    switch (activeTab) {
+      case 'articles': return articleFilters;
+      case 'books': return bookFilters;
+      case 'recipes': return recipeFilters;
+      default: return {};
+    }
+  };
+
+  const handleFilterChange = (newFilters: any) => {
+    switch (activeTab) {
+      case 'articles':
+        handleArticleFilterChange(newFilters);
+        break;
+      case 'books':
+        handleBookFilterChange(newFilters);
+        break;
+      case 'recipes':
+        handleRecipeFilterChange(newFilters);
+        break;
+    }
+  };
+
   return (
     <div className={styles.page}>
       <div className={styles.contentNavigation}>
@@ -120,15 +166,28 @@ const HomePage: React.FC = () => {
           <FilterPanel 
             contentType={activeTab}
             onFilterChange={handleFilterChange}
-            filters={filters}
+            filters={getCurrentFilters()}
+            filterData={{
+              articleTypes,
+              genres,
+              recipeTypes,
+              regions
+            }}
           />
         </aside>
         
         <main className={styles.contentArea}>
-          <ContentList 
-            contentType={activeTab}
-            items={getCurrentContent()}
-          />
+          {loading ? (
+            <div className={styles.loading}>
+              <div className={styles.spinner}></div>
+              <p>Загрузка...</p>
+            </div>
+          ) : (
+            <ContentList 
+              contentType={activeTab}
+              items={getCurrentContent()}
+            />
+          )}
         </main>
       </div>
     </div>

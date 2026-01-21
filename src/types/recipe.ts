@@ -1,3 +1,7 @@
+import { ContentStatus } from "./common";
+import { RecipeType } from "./recipe-type";
+import { Region } from "./region";
+
 export enum RecipeDifficulty {
   Easy = 1,
   Medium = 2,
@@ -5,17 +9,7 @@ export enum RecipeDifficulty {
   Expert = 4
 }
 
-export interface RegionDto {
-  id: string;
-  name: string;
-}
-
-export interface RecipeTypeDto {
-  id: string;
-  name: string;
-}
-
-export interface RecipeDto {
+export interface Recipe {
   id: string;
   title: string;
   slug: string;
@@ -25,12 +19,45 @@ export interface RecipeDto {
   instructions: string;
   cookTimeMinutes: number;
   imageId: string;
-  authorId: string;
-  authorName: string;
+  userId: string;
+  username: string;
+  status: ContentStatus;
   likesCount: number;
   commentsCount: number;
   createdOn: Date;
   modifiedOn: Date;
-  recipeTypeClaims: RecipeTypeDto[];
-  recipeRegions: RegionDto[];
+  recipeTypes: RecipeType[];
+  regions: Region[];
+}
+
+export interface RecipeCreateRequest {
+  title: string;
+  difficulty: RecipeDifficulty;
+  ingredients: string;
+  instructions: string;
+  cookTimeMinutes: number;
+  recipeTypeIds: string[];
+  regionIds: string[];
+}
+
+export interface RecipeFilter {
+  title: string | null;
+  recipeDifficulty: RecipeDifficulty | null;
+  recipeTypeIds: string[] | null;
+  regionIds: string[] | null;
+  cookTimeMin: number | null;
+  cookTimeMax: number | null;
+  available: boolean | null;
+  sort: 'cooktime_asc' | 'cooktime_desc' | 'difficulty_asc' | 'difficulty_desc' | 'created_desc' |  null;
+}
+
+export interface RecipeUpdateRequest {
+  title: string;
+  difficulty: RecipeDifficulty;
+  ingredients: string;
+  instructions: string;
+  status: ContentStatus;
+  cookTimeMinutes: number;
+  recipeTypeIds: string[];
+  regionIds: string[];
 }

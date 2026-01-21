@@ -61,3 +61,7 @@
   margin: 0;
   max-width: 300px;
 }
+
+.bookImageCover {
+  width: 100%;
+}

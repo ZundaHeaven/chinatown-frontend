@@ -1,12 +1,12 @@
 import React from 'react';
-import styles from './ContentList.module.css';
-import { ArticleDto } from '@/types/article';
-import { BookDto } from '@/types/book';
-import { ContentType } from '@/types/common';
-import { RecipeDto } from '@/types/recipe';
 import ArticleCard from './ArticleCard';
-import BookCard from './BookCard';
 import RecipeCard from './RecipeCard';
+import BookCard from './BookCard';
+import styles from './ContentList.module.css';
+import { Article } from '@/types/article';
+import { ContentType } from '@/types/common';
+import { Book } from '@/types/book';
+import { Recipe } from '@/types/recipe';
 
 interface ContentListProps {
   contentType: ContentType;
@@ -21,7 +21,7 @@ const ContentList: React.FC<ContentListProps> = ({ contentType, items }) => {
           <div className={styles.emptyIcon}>📚</div>
           <h3 className={styles.emptyTitle}>Контент не найден</h3>
           <p className={styles.emptyDescription}>
-            Попробуйте изменить параметры фильтров или загрузите контент
+            Попробуйте изменить параметры фильтров
           </p>
         </div>
       );
@@ -29,15 +29,15 @@ const ContentList: React.FC<ContentListProps> = ({ contentType, items }) => {
     
     switch (contentType) {
       case 'articles':
-        return items.map((article: ArticleDto) => (
+        return items.map((article: Article) => (
           <ArticleCard key={article.id} article={article} />
         ));
       case 'recipes':
-        return items.map((recipe: RecipeDto) => (
+        return items.map((recipe: Recipe) => (
           <RecipeCard key={recipe.id} recipe={recipe} />
         ));
       case 'books':
-        return items.map((book: BookDto) => (
+        return items.map((book: Book) => (
           <BookCard key={book.id} book={book} />
         ));
       default:

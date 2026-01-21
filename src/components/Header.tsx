@@ -2,16 +2,28 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
 import styles from './Header.module.css';
 
 const Header: React.FC = () => {
   const [activeItem, setActiveItem] = useState<string>('');
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const { user, isAuthenticated, logout, isLoading } = useAuth();
   
   const navItems = [
     { id: 'create', label: 'Создание', href: '/create' },
     { id: 'saved', label: 'Сохраненное', href: '/saved' },
-    { id: 'profile', label: 'Профиль', href: '/profile' },
+    { id: 'my-content', label: 'Мой контент', href: '/my-content' }
   ];
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setShowUserMenu(false);
+    } catch (error) {
+      console.error('Ошибка при выходе:', error);
+    }
+  };
 
   return (
     <header className={styles.header}>
@@ -38,9 +50,77 @@ const Header: React.FC = () => {
                 </Link>
               </li>
             ))}
+            {user?.role === 'Admin' && (
+              <Link href="/admin" className={styles.navLink}>
+                <span className={styles.navText}>Админка</span>
+              </Link>
+            )}
           </ul>
+          
+          <div className={styles.authSection}>
+            {isLoading ? (
+              <div className={styles.loadingSpinner}></div>
+            ) : isAuthenticated && user ? (
+              <div className={styles.userMenu}>
+                <button
+                  className={styles.userButton}
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  aria-label="Меню пользователя"
+                >
+                  <div className={styles.userAvatar}>
+                    <span className={styles.avatarText}>
+                      {user.username.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <span className={styles.userName}>{user.username}</span>
+                  <span className={styles.menuArrow}>
+                    {showUserMenu ? '▲' : '▼'}
+                  </span>
+                </button>
+                
+                {showUserMenu && (
+                  <div className={styles.dropdownMenu}>
+                    <div className={styles.dropdownHeader}>
+                      <span className={styles.dropdownEmail}>{user.email}</span>
+                      <span className={styles.dropdownRole}>{user.role}</span>
+                    </div>
+                    <Link 
+                      href={`/users/${user?.id}`}
+                      className={styles.dropdownItem}
+                      onClick={() => setShowUserMenu(false)}
+                    >
+                      Мой профиль
+                    </Link>
+                    <div className={styles.dropdownDivider}></div>
+                    <button
+                      className={styles.dropdownItem}
+                      onClick={handleLogout}
+                    >
+                      Выйти
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className={styles.authButtons}>
+                <Link href="/login" className={styles.loginButton}>
+                  Войти
+                </Link>
+                <Link href="/register" className={styles.registerButton}>
+                  Регистрация
+                </Link>
+              </div>
+            )}
+          </div>
         </nav>
       </div>
+      
+      {showUserMenu && (
+        <div 
+          className={styles.menuOverlay}
+          onClick={() => setShowUserMenu(false)}
+        />
+      )}
     </header>
   );
 };

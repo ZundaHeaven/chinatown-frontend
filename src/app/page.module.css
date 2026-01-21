@@ -1,5 +1,5 @@
 .page {
-  min-height: calc(100vh - 80px - 200px); 
+  min-height: calc(100vh - 80px - 200px);
   background: linear-gradient(
     135deg,
     rgba(248, 245, 241, 0.9) 0%,
@@ -33,7 +33,7 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   height: fit-content;
   position: sticky;
-  top: 100px; 
+  top: 100px;
 }
 
 .contentArea {
@@ -42,6 +42,29 @@
   padding: 1.5rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   min-height: 600px;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  color: #666;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(74, 144, 164, 0.2);
+  border-radius: 50%;
+  border-top-color: var(--sea-color-1);
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 @keyframes fadeIn {

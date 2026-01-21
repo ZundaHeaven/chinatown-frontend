@@ -1,9 +1,11 @@
 import React from 'react';
 import styles from './ContentCard.module.css';
-import { RecipeDifficulty, RecipeDto } from '@/types/recipe';
+import { Recipe, RecipeDifficulty } from '@/types/recipe';
+import Link from 'next/link';
+import { API_URL } from '@/lib/auth';
 
 interface RecipeCardProps {
-  recipe: RecipeDto;
+  recipe: Recipe;
 }
 
 const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
@@ -23,11 +25,13 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
         <div className={styles.userInfo}>
           <div className={styles.avatar}>
             <span className={styles.avatarText}>
-              {recipe.authorName.charAt(0)}
+              {recipe.username?.charAt(0) || 'П'}
             </span>
           </div>
           <div className={styles.userDetails}>
-            <span className={styles.username}>Пользователь</span>
+            <Link href={`/users/${recipe.userId}`}>
+              <span className={styles.username}>{recipe.username}</span>
+            </Link>
             <span className={styles.postMeta}>
               {getDifficultyText(recipe.difficulty)} • {recipe.cookTimeMinutes} мин
             </span>
@@ -35,10 +39,11 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
         </div>
       </div>
       
-      <div className={styles.recipeContent}>
+      <Link href={`/recipes/${recipe.id}`}>
+        <div className={styles.recipeContent}>
         <div className={styles.recipeImage}>
           <div className={styles.imagePlaceholder}>
-            <span className={styles.imageIcon}>🍜</span>
+            <img src={`${API_URL}/images/${recipe.imageId}`} alt="" className={styles.bookImageCover}/>
           </div>
         </div>
         
@@ -48,12 +53,12 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
           <p className={styles.cardExcerpt}>{recipe.excerpt}</p>
           
           <div className={styles.recipeTags}>
-            {recipe.recipeTypeClaims.slice(0, 2).map((type) => (
+            {recipe.recipeTypes?.slice(0, 2).map((type) => (
               <span key={type.id} className={styles.tag}>
                 {type.name}
               </span>
             ))}
-            {recipe.recipeRegions.slice(0, 1).map((region) => (
+            {recipe.regions?.slice(0, 1).map((region) => (
               <span key={region.id} className={styles.tag}>
                 {region.name}
               </span>
@@ -61,6 +66,8 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
           </div>
         </div>
       </div>
+      </Link>
+
       
       <div className={styles.cardStats}>
         <div className={styles.stat}>

@@ -11,7 +11,7 @@ const ContentTabs: React.FC<ContentTabsProps> = ({ activeTab, onTabChange }) => 
   const tabs = [
     { id: 'articles', label: 'Статьи' },
     { id: 'recipes', label: 'Рецепты' },
-    { id: 'books', label: 'Литература' },
+    { id: 'books', label: 'Книги' },
   ] as const;
 
   return (
