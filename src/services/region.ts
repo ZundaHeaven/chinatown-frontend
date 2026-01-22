@@ -1,4 +1,4 @@
-import { API_URL, getAuthHeaders, handleResponse } from "@/lib/auth";
+import { API_URL, authFetch, getAuthHeaders, handleResponse } from "@/lib/auth";
 import { Region, RegionCreateRequest, RegionUpdateRequest } from "@/types/region";
 
 export const getRegions = async (): Promise<Region[]> => {
@@ -12,27 +12,24 @@ export const getRegionById = async (id: string): Promise<Region> => {
 };
 
 export const createRegion = async (data: RegionCreateRequest): Promise<Region> => {
-  const response = await fetch(`${API_URL}/api/regions`, {
+  const response = await authFetch(`${API_URL}/api/regions`, {
     method: 'POST',
-    headers: getAuthHeaders(),
     body: JSON.stringify(data),
   });
   return handleResponse(response);
 };
 
 export const updateRegion = async (id: string, data:  RegionUpdateRequest): Promise<Region> => {
-  const response = await fetch(`${API_URL}/api/regions/${id}`, {
+  const response = await authFetch(`${API_URL}/api/regions/${id}`, {
     method: 'PUT',
-    headers: getAuthHeaders(),
     body: JSON.stringify(data),
   });
   return handleResponse(response);
 };
 
 export const deleteRegion = async (id: string): Promise<void> => {
-  const response = await fetch(`${API_URL}/api/regions/${id}`, {
+  const response = await authFetch(`${API_URL}/api/regions/${id}`, {
     method: 'DELETE',
-    headers: getAuthHeaders(),
   });
   
   if (!response.ok) {

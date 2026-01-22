@@ -1,4 +1,4 @@
-import { API_URL, getAccessToken, getAuthHeaders, handleResponse } from "@/lib/auth";
+import { API_URL, authFetch, getAccessToken, getAuthHeaders, handleResponse } from "@/lib/auth";
 import { ContentStatus, Like } from "@/types/common";
 import { Recipe, RecipeCreateRequest, RecipeFilter, RecipeUpdateRequest } from "@/types/recipe";
 
@@ -43,9 +43,8 @@ export const createRecipe = async (data: RecipeCreateRequest): Promise<Recipe> =
 };
 
 export const updateRecipe = async (id: string, data: RecipeUpdateRequest): Promise<Recipe> => {
-  const response = await fetch(`${API_URL}/api/recipes/${id}`, {
+  const response = await authFetch(`${API_URL}/api/recipes/${id}`, {
     method: 'PUT',
-    headers: getAuthHeaders(),
     body: JSON.stringify(data),
   });
   return handleResponse(response);

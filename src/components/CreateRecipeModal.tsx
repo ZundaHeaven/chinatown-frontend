@@ -68,7 +68,19 @@ const CreateRecipeModal: React.FC<CreateRecipeModalProps> = ({ onClose, onSucces
         throw new Error('Инструкции обязательны');
       }
 
-      const recipe = await createRecipe(formData);
+      let difficulty = parseInt(formData.difficulty.toString()) as RecipeDifficulty;
+
+      const data : RecipeCreateRequest = {
+        title: formData.title,
+        difficulty: difficulty,
+        ingredients: formData.ingredients,
+        instructions: formData.instructions,
+        cookTimeMinutes: formData.cookTimeMinutes,
+        recipeTypeIds: [...formData.recipeTypeIds],
+        regionIds: [...formData.regionIds]
+      }
+
+      const recipe = await createRecipe(data);
 
       if (imageFile) {
         await uploadRecipeImage(recipe.id, imageFile);

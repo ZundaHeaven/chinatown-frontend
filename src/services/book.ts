@@ -1,4 +1,4 @@
-import { API_URL, getAccessToken, getAuthHeaders, handleResponse } from "@/lib/auth";
+import { API_URL, authFetch, getAccessToken, getAuthHeaders, handleResponse } from "@/lib/auth";
 import { Book, BookCreateRequest, BookFilter, BookUpdateRequest } from "@/types/book";
 import { ContentStatus, Like } from "@/types/common";
 
@@ -18,7 +18,6 @@ export const getBooks = async (filter?: BookFilter): Promise<Book[]> => {
   }
   
   const response = await fetch(`${API_URL}/api/books?${params.toString()}`, {
-    headers: getAuthHeaders(),
   });
   return handleResponse(response);
 };
@@ -31,27 +30,24 @@ export const getBookById = async (id: string): Promise<Book> => {
 };
 
 export const createBook = async (data: BookCreateRequest): Promise<Book> => {
-  const response = await fetch(`${API_URL}/api/books`, {
+  const response = await authFetch(`${API_URL}/api/books`, {
     method: 'POST',
-    headers: getAuthHeaders(),
     body: JSON.stringify(data),
   });
   return handleResponse(response);
 };
 
 export const updateBook = async (id: string, data: BookUpdateRequest): Promise<Book> => {
-  const response = await fetch(`${API_URL}/api/books/${id}`, {
+  const response = await authFetch(`${API_URL}/api/books/${id}`, {
     method: 'PUT',
-    headers: getAuthHeaders(),
     body: JSON.stringify(data),
   });
   return handleResponse(response);
 };
 
 export const deleteBook = async (id: string): Promise<void> => {
-  const response = await fetch(`${API_URL}/api/books/${id}`, {
+  const response = await authFetch(`${API_URL}/api/books/${id}`, {
     method: 'DELETE',
-    headers: getAuthHeaders(),
   });
   
   if (!response.ok) {
@@ -120,9 +116,8 @@ export const getBookLikes = async (bookId: string): Promise<Like[]> => {
 };
 
 export const changeBookStatus = async (bookId: string, status: ContentStatus) : Promise<void> => {
-  const response = await fetch(`${API_URL}/api/books/${bookId}/status`, {
+  const response = await authFetch(`${API_URL}/api/books/${bookId}/status`, {
     method: 'PATCH',
-    headers: getAuthHeaders(),
     body: JSON.stringify(status)
   });
   

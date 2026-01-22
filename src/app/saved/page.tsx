@@ -27,11 +27,11 @@ interface SavedContent {
 
 const SavedPage: React.FC = () => {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   
   const [content, setContent] = useState<SavedContent[]>([]);
   const [filteredContent, setFilteredContent] = useState<SavedContent[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingContent, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeFilter, setActiveFilter] = useState<ContentType | 'all'>('all');
 
@@ -170,14 +170,14 @@ const SavedPage: React.FC = () => {
     });
   };
 
-  if (!user) {
+  if (!user && !isLoading) {
     return (
       <div className={styles.authRequired}>
         <div className={styles.authIcon}>🔒</div>
         <h2>Требуется авторизация</h2>
         <p>Для просмотра сохраненного контента необходимо войти в систему.</p>
         <button
-          onClick={() => router.push('/auth/login')}
+          onClick={() => router.push('/login')}
           className={styles.authButton}
         >
           Войти
@@ -186,7 +186,7 @@ const SavedPage: React.FC = () => {
     );
   }
 
-  if (isLoading) {
+  if (isLoadingContent) {
     return (
       <div className={styles.loadingContainer}>
         <div className={styles.spinner}></div>

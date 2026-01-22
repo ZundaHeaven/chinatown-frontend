@@ -24,7 +24,6 @@ export const getUserById = async (id: string): Promise<User | null> => {
 export const updateUser = async (id: string, data: UserUpdateRequest): Promise<User> => {
   const response = await authFetch(`${API_URL}/api/users/${id}`, {
     method: 'PUt',
-    headers: getAuthHeaders(),
     body: JSON.stringify(data),
   });
   return handleResponse<User>(response);
@@ -33,7 +32,6 @@ export const updateUser = async (id: string, data: UserUpdateRequest): Promise<U
 export const deleteUser = async (id: string): Promise<void> => {
   const response = await authFetch(`${API_URL}/api/users/${id}`, {
     method: 'DELETE',
-    headers: getAuthHeaders(),
   });
   
   if (!response.ok) {
@@ -62,7 +60,6 @@ export const getAvatarUrl = (avatarId: string): string => {
 export const deleteAvatar = async (id: string): Promise<void> => {
   const response = await authFetch(`${API_URL}/api/users/${id}/avatar`, {
     method: 'DELETE',
-    headers: getAuthHeaders(),
   });
   
   if (!response.ok) {

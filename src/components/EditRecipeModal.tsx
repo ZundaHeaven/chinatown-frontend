@@ -58,7 +58,17 @@ const EditRecipeModal: React.FC<EditRecipeModalProps> = ({ recipe, onClose, onUp
     setError('');
 
     try {
-      await onUpdate(formData);
+      const data : RecipeUpdateRequest = {
+        title: formData.title,
+        difficulty: parseInt(formData.difficulty.toString()),
+        ingredients: formData.ingredients,
+        instructions: formData.instructions,
+        status: formData.status,
+        cookTimeMinutes: formData.cookTimeMinutes,
+        recipeTypeIds: [...formData.recipeTypeIds],
+        regionIds: [...formData.regionIds]
+      }
+      await onUpdate(data);
       onClose();
     } catch (err: any) {
       setError(err.message || 'Ошибка при обновлении рецепта');
